@@ -88,13 +88,18 @@ export default class AppClass extends React.Component {
     evt.preventDefault();
     this.setState({
       ...this.state,
-      index: this.getNextIndex(evt.target.id)
+      index: this.getNextIndex(evt.target.id),
+      steps: this.state.steps + 1
     })
 
   }
 
   onChange = (evt) => {
     // You will need this to update the value of the input.
+    this.setState({
+      ...this.state,
+      email: evt.target.value
+    })
   }
 
   onSubmit = (evt) => {
@@ -107,7 +112,7 @@ export default class AppClass extends React.Component {
       <div id="wrapper" className={className}>
         <div className="info">
           <h3 id="coordinates">Coordinates (2, 2)</h3>
-          <h3 id="steps">You moved 0 times</h3>
+          <h3 id="steps">You moved {this.state.steps} times</h3>
         </div>
         <div id="grid">
           {
@@ -119,7 +124,7 @@ export default class AppClass extends React.Component {
           }
         </div>
         <div className="info">
-          <h3 id="message"></h3>
+          <h3 id="message">{this.state.message}</h3>
         </div>
         <div id="keypad">
           <button onClick={this.move} id="left">LEFT</button>
@@ -129,7 +134,7 @@ export default class AppClass extends React.Component {
           <button onClick={this.reset} id="reset">reset</button>
         </div>
         <form>
-          <input id="email" type="email" placeholder="type email"></input>
+          <input onChange={this.onChange} id="email" type="email" placeholder="type email"></input>
           <input id="submit" type="submit"></input>
         </form>
       </div>
