@@ -6,12 +6,14 @@ const initialMessage = ''
 const initialEmail = ''
 const initialSteps = 0
 const initialIndex = 4 // the index the "B" is at
+const initialResponseMessage = ''
 
 const initialState = {
   message: initialMessage,
   email: initialEmail,
   index: initialIndex,
   steps: initialSteps,
+  responseMessage: initialResponseMessage
 }
 
 export default class AppClass extends React.Component {
@@ -42,14 +44,14 @@ export default class AppClass extends React.Component {
     } else {
       x = 3
     }
-    return `Coordinates (${x}, ${y})`;
+    return ([x, y])
   }
 
   getXYMessage = () => {
     // It it not necessary to have a state to track the "Coordinates (2, 2)" message for the user.
     // You can use the `getXY` helper above to obtain the coordinates, and then `getXYMessage`
     // returns the fully constructed string.
-    
+    return `Coordinates (${this.getXY()[0]}, ${this.getXY()[1]})`
   }
 
   reset = () => {
@@ -106,6 +108,28 @@ export default class AppClass extends React.Component {
 
   onSubmit = (evt) => {
     // Use a POST request to send a payload to the server.
+    evt.preventDefault();
+    const newPost = {
+      'x': this.getXY()[0],
+      'y': this.getXY()[1],
+      'steps': this.state.steps,
+      'email': this.state.email
+    }
+    axios.post('http://localhost:9000/api/result', newPost)
+      .then(res => 
+        this.setState({
+          ...this.state,
+          responseMessage: res.data.message
+        })
+        )
+      .catch(err =>
+        this.setState({
+        ...this.state,
+        responseMessage: err.response.data.message
+      })
+      )
+      
+    this.setState(initialState);
   }
 
   render() {
@@ -113,8 +137,8 @@ export default class AppClass extends React.Component {
     return (
       <div id="wrapper" className={className}>
         <div className="info">
-          <h3 id="coordinates">{this.getXY()}</h3>
-          <h3 id="steps">You moved {this.state.steps} times</h3>
+          <h3 id="coordinates">{this.getXYMessage()}</h3>
+          <h3 id="steps">{this.state.steps === 1 ? `You moved ${this.state.steps} time` : `You moved ${this.state.steps} times`} </h3>
         </div>
         <div id="grid">
           {
@@ -136,8 +160,9 @@ export default class AppClass extends React.Component {
           <button onClick={this.reset} id="reset">reset</button>
         </div>
         <form>
-          <input onChange={this.onChange} id="email" type="email" placeholder="type email"></input>
-          <input id="submit" type="submit"></input>
+          <input onChange={this.onChange} id="email" type="email" placeholder="type email" value={this.state.email}></input>
+          <input onClick= {this.onSubmit} id="submit" type="submit"></input>
+        <div>{this.state.responseMessage}</div>
         </form>
       </div>
     )
