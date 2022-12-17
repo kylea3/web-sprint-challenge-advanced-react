@@ -1,4 +1,5 @@
-import React from 'react'
+import React from 'react';
+import axios from 'axios';
 
 // Suggested initial states
 const initialMessage = ''
@@ -60,36 +61,37 @@ export default class AppClass extends React.Component {
     // This helper takes a direction ("left", "up", etc) and calculates what the next index
     // of the "B" would be. If the move is impossible because we are at the edge of the grid,
     // this helper should return the current index unchanged.
-    let newIndex = {...this.state}
-    if(direction === 'left' && newIndex.index === 0 || newIndex.index === 3 || newIndex.index === 6 ) {
-      return newIndex.index
-    } else if (direction === 'right' && newIndex.index === 2 || newIndex.index === 5 || newIndex.index === 8 ) {
-      return newIndex.index
-    } else if (direction === 'up' && newIndex.index === 0 || newIndex.index === 1 || newIndex.index === 2 ) {
-      return newIndex.index
-    } else if (direction === 'down' && newIndex.index === 6 || newIndex.index === 7 || newIndex.index === 8 ) {
-      return newIndex.index
+    if(direction === 'left' && (this.state.index === 0 || this.state.index === 3 || this.state.index === 6) ) {
+      return 0
+    } else if (direction === 'right' && (this.state.index === 2 || this.state.index === 5 || this.state.index === 8) ) {
+      return 0
+    } else if (direction === 'up' && (this.state.index === 0 || this.state.index === 1 || this.state.index === 2) ) {
+      return 0
+    } else if (direction === 'down' && (this.state.index === 6 || this.state.index === 7 || this.state.index === 8) ) {
+      return 0
     } else if(direction === 'left') {
-      newIndex.index = newIndex.index - 1;
+      return -1
     } else if (direction === 'right') {
-      newIndex.index = newIndex.index + 1
+      return 1
     } else if (direction === 'up') {
-      newIndex.index = newIndex.index - 3
+      return -3
     } else if (direction === 'down') {
-      newIndex.index = newIndex.index + 3
+      return 3
+    } else {
+      return 0
     }
-
-    return newIndex.index;
   }
 
   move = (evt) => {
     // This event handler can use the helper above to obtain a new index for the "B",
     // and change any states accordingly.
     evt.preventDefault();
+    
     this.setState({
       ...this.state,
-      index: this.getNextIndex(evt.target.id),
-      steps: this.state.steps + 1
+      message: this.getNextIndex(evt.target.id) === 0 ? `You can't go ${evt.target.id}` : '',
+      index: this.state.index + this.getNextIndex(evt.target.id),
+      steps: this.getNextIndex(evt.target.id) === 0 ? this.state.steps : this.state.steps + 1
     })
 
   }
@@ -111,7 +113,7 @@ export default class AppClass extends React.Component {
     return (
       <div id="wrapper" className={className}>
         <div className="info">
-          <h3 id="coordinates">Coordinates (2, 2)</h3>
+          <h3 id="coordinates">{this.getXY()}</h3>
           <h3 id="steps">You moved {this.state.steps} times</h3>
         </div>
         <div id="grid">
