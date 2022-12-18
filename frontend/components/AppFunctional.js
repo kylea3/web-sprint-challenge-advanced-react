@@ -122,6 +122,8 @@ export default function AppFunctional(props) {
       .then(res => 
         setState({
           ...state,
+          email: initialEmail,
+          message: initialMessage,
           responseMessage: res.data.message
         })
         )
@@ -131,15 +133,6 @@ export default function AppFunctional(props) {
         responseMessage: err.response.data.message
       })
       )
-      
-    setState({
-      ...state,
-      email: initialEmail,
-      message: initialMessage,
-      steps: initialSteps,
-      index: initialIndex,
-      responseMessage: initialResponseMessage
-    });
   }
 
   return (
